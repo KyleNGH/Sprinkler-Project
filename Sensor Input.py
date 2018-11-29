@@ -56,13 +56,23 @@ def getdatetime(timedateformat='complete'):
 
 ###### To save file on csv
 #   mode - open( name, mode('r'eading or 'w'riting or 'a'ppending)
-def create_save_data_file(i):
-    output_file = 'data_{0}.csv'.format( i )
-    with open(output_file,'w') as f:
-        header = ["date","hour","minute","temp","weather","soil"]
-        f.write(','.join(header)+'\n')
-    
+def create_save_data_file():
+    date = getdatetime('yearmonthday')
 
+    output_file = 'data_{0}.csv'.format( date )
+    
+    try:
+        with open(output_file,'r') as f:
+            print(output_file + ' exists.')
+            
+    except:    
+        with open(output_file,'w') as f:
+            header = ["date","hour","minute","temp","weather","soil"]
+            f.write(','.join(header)+'\n')
+            print(output_file + ' was created.')
+    finally:
+        f.close()
+            
 ###### Get data from sensor  
 def sensor_data():
     # Analog Input using MCP3008 Chip
@@ -102,12 +112,10 @@ def get_weather():
 
     w = observation.get_weather()
 
-    wind = w.get_wind()
-
     print(w)
-    print(wind)
 
-
+### get sensor data and weather data and add to file
+#def add_data_to_file
 
     
 ### main program to constantly run
@@ -115,11 +123,11 @@ def get_weather():
     
 data = sensor_data()
 
-date = getdatetime('daymonthyear')
+get_weather()
 
+create_save_data_file()
 
-create_save_data_file( date )
-
+#add_data_to_file()
 
 #data = 
 
