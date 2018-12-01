@@ -4,10 +4,6 @@ Name: Kyle GH
 File: Read Data from file
 
 '''
-### import libraries
-from sensor_input import *
-
-
 
 ### pull current weather 
 def get_weather():
@@ -23,11 +19,6 @@ def get_weather():
     status = weather.get_status()
     
     return status
-
-
-#def combine data():
-    
-    
 
 
 
