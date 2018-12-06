@@ -80,11 +80,11 @@ def sensor_data():
     from gpiozero import PWMLED
     from time import sleep
 
-    #	pot = variable resistor
-    #	Top Left corner 	= 0.0	,zero
-    #	Bottom Left corner 	= 1.0	,max
-    #	find voltage by multiplying max possible, 3.3v
-    #  	voltage = vref * pot.value
+    #   pot = variable resistor
+    #   Top Left corner     = 0.0   ,zero
+    #   Bottom Left corner  = 1.0   ,max
+    #   find voltage by multiplying max possible, 3.3v
+    #   voltage = vref * pot.value
 
     voltage = [0,0,0,0,0,0,0,0]
     vref = 3.3
@@ -94,13 +94,15 @@ def sensor_data():
     pot = MCP3008(0)
 
 
-    led.on()	# led lit
+    led.on()    # led lit
     led2.source = pot.values
-    print(pot.value)
+    value = pot.value
     sleep(5)
     led.off()
     led2.close()
-
+    
+    return value
+    
 ### use api key to grab weather data
 def get_weather():
     import pyowm
@@ -117,7 +119,30 @@ def get_weather():
 ### get sensor data and weather data and add to file
 #def add_data_to_file
 
+### bluetooth data reciever
+# server recieves data from client
+# rfcomm_server.py
+#receive
+
+def racieve_data()
+    from bluetooth import *
+
+    server_socket = BluetoothSocket( RFCOMM )
+
+    server_socket.bind(("",1))
+    server_socket.listen(1)
+
+    client_socket,address = server_socket.accept()
+
+    data = client_socket.recv(1024)
+
+#   print("received [%s]" % data)
+    print("Transmission success")
+    client_socket.close()
+    server_socket.close()
     
+    return data
+
 ### main program to constantly run
 #while True:
     
