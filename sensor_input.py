@@ -4,6 +4,7 @@
 #   Date: Nov 11, 2018
 
 ### import libraries
+from bluetooth import *
 
 
 
@@ -54,7 +55,8 @@ def getdatetime(timedateformat='complete'):
 
 
 
-###### To save file on csv
+
+###### To create csv file for saved data
 #   mode - open( name, mode('r'eading or 'w'riting or 'a'ppending)
 def create_save_data_file():
     date = getdatetime('yearmonthday')
@@ -73,12 +75,50 @@ def create_save_data_file():
     finally:
         f.close()
             
+
+###### To save file on csv
+#   mode - open( name, mode('r'eading or 'w'riting or 'a'ppending)
+def append_save_data_file(weather,soil):
+    from gpiozero import CPUTemperature
+    import os
+    
+    date = getdatetime('yearmonthday')
+    day = getdatetime('day')
+    hour = getdatetime('hour')
+    min  = getdatetime('minute')
+    sec = getdatetime('second')
+    currently = getdatetime('hourminutesecond')
+    temp = CPUTemperature().temperature
+
+
+    output_file = 'data_{0}.csv'.format( date )
+    
+    try:
+        with open(output_file,'r') as f:
+            print(output_file + ' file exists.')
+            
+    except:    
+        with open(output_file,'w') as f:
+            header = ["Day","Hour","Minute","Second","Temperature","Weather","Soil"]
+            f.write(','.join(header)+'\n')
+            print(output_file + ' file was created.')
+    finally:
+        with open(output_file,'a') as f:
+            line = [day,hour,min,sec,temp,weather,soil]
+            next_line = [ str(line) for items in line ]
+            f.write(','.join( next_line )+'\n')
+            print(currently + ' data added to ' + output_file )
+        
+        f.close()
+
+
 ###### Get data from sensor  
 def sensor_data():
     # Analog Input using MCP3008 Chip
     from gpiozero import MCP3008
     from gpiozero import PWMLED
     from time import sleep
+
 
     #   pot = variable resistor
     #   Top Left corner     = 0.0   ,zero
@@ -101,6 +141,8 @@ def sensor_data():
     led.off()
     led2.close()
     
+    print("Sensor Data Read")
+    
     return value
     
 ### use api key to grab weather data
@@ -114,8 +156,10 @@ def get_weather():
 
     w = observation.get_weather()
 
-    print(w)
-
+    print("Weather Received")
+    
+    return w
+    
 ### get sensor data and weather data and add to file
 #def add_data_to_file
 
@@ -124,16 +168,15 @@ def get_weather():
 # rfcomm_server.py
 #receive
 
-def racieve_data()
-    from bluetooth import *
+def receive_data():
 
     server_socket = BluetoothSocket( RFCOMM )
 
     server_socket.bind(("",1))
     server_socket.listen(1)
 
-    client_socket,address = server_socket.accept()
 
+    client_socket,address = server_socket.accept()
     data = client_socket.recv(1024)
 
 #   print("received [%s]" % data)
@@ -143,11 +186,47 @@ def racieve_data()
     
     return data
 
+### bluetooth data sender
+#Sensor client send data to server
+# sudo rfcomm help
+
+def send_data(data):
+    from time import sleep
+    
+
+
+    package = str(data)
+    while True:
+        try:
+                #create client socket
+            client_socket=BluetoothSocket( RFCOMM )
+            addr = "B8:27:EB:DF:04:DF"
+            port = 1
+            client_socket.connect((addr,port))
+    
+            client_socket.send( package )
+
+            print("Data Sent")
+
+            client_socket.close()
+            break
+        except:
+            print('Waiting for Connection')
+            sleep(10)
+       
+
+'''
+
+## Import Libraries
+from sensor_input import *
+
+
 ### main program to constantly run
 #while True:
     
 data = sensor_data()
 
+send_data(data)
 get_weather()
 
 create_save_data_file()
@@ -156,9 +235,8 @@ create_save_data_file()
 
 #data = 
 
-
-
-
+print ("END TRANSMISSION")
+'''
 
 
 
