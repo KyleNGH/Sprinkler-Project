@@ -5,6 +5,20 @@
 
 ### import libraries
 from bluetooth import *
+import matplotlib.pyplot as plt
+from time import sleep, time
+from gpiozero import CPUTemperature
+from datetime import datetime
+import os
+from gpiozero import MCP3008
+from gpiozero import PWMLED
+import pyowm
+
+
+plt.ion()
+x1 = []
+x2 = []
+y1 = [] 
 
 
 
@@ -18,7 +32,7 @@ from bluetooth import *
 # type [  getdatetime('TYPE') replace type with desired output using ' or "
 
 def getdatetime(timedateformat='complete'):
-    from datetime import datetime
+    
     timedateformat=timedateformat.lower()
 
     if timedateformat == 'day':
@@ -79,13 +93,12 @@ def create_save_data_file():
 ###### To save file on csv
 #   mode - open( name, mode('r'eading or 'w'riting or 'a'ppending)
 def append_save_data_file(weather,soil):
-    from gpiozero import CPUTemperature
-    import os
+
     
     date = getdatetime('yearmonthday')
     day = getdatetime('day')
     hour = getdatetime('hour')
-    min  = getdatetime('minute')
+    mini  = getdatetime('minute')
     sec = getdatetime('second')
     currently = getdatetime('hourminutesecond')
     temp = CPUTemperature().temperature
@@ -104,7 +117,7 @@ def append_save_data_file(weather,soil):
             print(output_file + ' file was created.')
     finally:
         with open(output_file,'a') as f:
-            line = [day,hour,min,sec,temp,weather,soil]
+            line = [day,hour,mini,sec,temp,weather,soil]
             next_line = [ str(line) for items in line ]
             f.write(','.join( next_line )+'\n')
             print(currently + ' data added to ' + output_file )
@@ -119,16 +132,14 @@ def graph( data ):
     #x2.append(temp)
     
     plt.clf()
-    plt.scatter( x1,y )
-    plt.plot( x1,y )
+    plt.scatter( x1,y1 )
+    plt.plot( x1,y1 )
     plt.draw()
 
 ###### Get data from sensor  
 def sensor_data():
     # Analog Input using MCP3008 Chip
-    from gpiozero import MCP3008
-    from gpiozero import PWMLED
-    from time import sleep
+
 
 
     #   pot = variable resistor
@@ -158,7 +169,6 @@ def sensor_data():
     
 ### use api key to grab weather data
 def get_weather():
-    import pyowm
 
     # api key
     owm = pyowm.OWM("b508f902bfd4f9d38491e1b8557c675f")
@@ -204,10 +214,10 @@ def receive_data():
 def send_data(data):
     from time import sleep
     
-
+    sent=False
 
     package = str(data)
-    while True:
+    while sent==False:
         try:
                 #create client socket
             client_socket=BluetoothSocket( RFCOMM )
@@ -220,7 +230,7 @@ def send_data(data):
             print("Data Sent")
 
             client_socket.close()
-            break
+            sent = True
         except:
             print('Waiting for Connection')
             sleep(10)

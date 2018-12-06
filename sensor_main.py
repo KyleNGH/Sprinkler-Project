@@ -11,14 +11,7 @@ EE496
 ### Import Libraries
 from sensor_input import *
 from gpiozero import CPUTemperature
-from time import sleep
-import matplotlib.pyplot as plt
-
-
-plt.ion()
-x1 = []
-x2 = []
-y1 = [] 
+from time import sleep, time
 
 ### main program to constantly run
 while True:
@@ -32,9 +25,11 @@ while True:
     #weather ,soil
     append_save_data_file(weather,data)
     
-    graph(data)
+    
     
     send_data(data)
+
+    #graph(data)
 
     sleep(1)
 
