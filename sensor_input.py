@@ -111,6 +111,17 @@ def append_save_data_file(weather,soil):
         
         f.close()
 
+### graph dat
+def graph( data ):
+    # interactive plots
+    y1.append(data)
+    x1.append(time())
+    #x2.append(temp)
+    
+    plt.clf()
+    plt.scatter( x1,y )
+    plt.plot( x1,y )
+    plt.draw()
 
 ###### Get data from sensor  
 def sensor_data():
